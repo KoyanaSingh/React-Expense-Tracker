@@ -2,6 +2,8 @@
 
 A clean, minimal expense tracking app built with React. Add your daily expenses, see the total instantly, and delete entries when done.
 
+**Live Demo → [react-expense-tracker-umber.vercel.app](https://react-expense-tracker-umber.vercel.app)**
+
 ![Expense Tracker](./screenshot.png)
 
 ## Features
