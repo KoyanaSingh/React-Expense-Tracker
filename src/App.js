@@ -1,39 +1,52 @@
 import { useState } from "react";
 
+const ICONS = ["🛵", "🍽️", "🛍️", "📱", "☕", "🏠", "⚡", "🎵"];
+function pickIcon() { return ICONS[Math.floor(Math.random() * ICONS.length)]; }
+function fmt(n) { return "₹" + Math.round(n).toLocaleString("en-IN"); }
+
 function App() {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [expenses, setExpenses] = useState([]);
 
   const handleAdd = () => {
-    if (!name || !amount) return;
-    const newExpense = { id: Date.now(), name: name, amount: Number(amount) };
-    setExpenses([...expenses, newExpense]);
+    if (!name || !amount || Number(amount) <= 0) return;
+    setExpenses([...expenses, { id: Date.now(), name, amount: Number(amount), icon: pickIcon() }]);
     setName("");
     setAmount("");
   };
 
-  const handleDelete = (id) => {
-    setExpenses(expenses.filter((expense) => expense.id !== id));
+  const handleDelete = (id) => setExpenses(expenses.filter((e) => e.id !== id));
+  const total = expenses.reduce((sum, e) => sum + e.amount, 0);
+
+  const inputStyle = {
+    height: "40px", padding: "0 12px", borderRadius: "10px",
+    border: "1.5px solid #F0F0F0", background: "#FAFAFA",
+    fontSize: "14px", outline: "none",
   };
 
-  const total = expenses.reduce((sum, expense) => sum + expense.amount, 0);
-
   return (
-    <div style={{ maxWidth: "480px", margin: "2.5rem auto", fontFamily: "'Segoe UI', sans-serif", padding: "0 1rem" }}>
+    <div style={{ maxWidth: "460px", margin: "2.5rem auto", fontFamily: "'Segoe UI', sans-serif", padding: "0 1rem" }}>
 
-      {/* Total */}
-      <div style={{ background: "#0f0f0f", borderRadius: "16px", padding: "1.5rem 1.75rem", marginBottom: "1rem" }}>
-        <div style={{ fontSize: "12px", color: "#888", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: "6px" }}>Total Spent</div>
-        <div style={{ fontSize: "36px", fontWeight: "600", color: "#fff" }}>₹{total.toLocaleString("en-IN")}</div>
-        <div style={{ fontSize: "13px", color: "#555", marginTop: "6px" }}>
-          {expenses.length === 0 ? "No expenses yet" : `${expenses.length} expense${expenses.length > 1 ? "s" : ""}`}
+      {/* Total card */}
+      <div style={{ background: "#4F46E5", borderRadius: "20px", padding: "1.75rem", marginBottom: "1rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div>
+            <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)", letterSpacing: "0.07em", textTransform: "uppercase", marginBottom: "8px" }}>Total Spent</div>
+            <div style={{ fontSize: "42px", fontWeight: "500", color: "#fff", lineHeight: 1 }}>{fmt(total)}</div>
+            <div style={{ fontSize: "13px", color: "rgba(255,255,255,0.5)", marginTop: "8px" }}>
+              {expenses.length === 0 ? "No expenses yet" : `${expenses.length} expense${expenses.length > 1 ? "s" : ""}`}
+            </div>
+          </div>
+          <div style={{ width: "44px", height: "44px", background: "rgba(255,255,255,0.15)", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px" }}>
+            👛
+          </div>
         </div>
       </div>
 
       {/* Form */}
-      <div style={{ background: "#fff", border: "1px solid #ebebeb", borderRadius: "16px", padding: "1.25rem 1.5rem", marginBottom: "1rem" }}>
-        <div style={{ fontSize: "12px", color: "#999", marginBottom: "10px", letterSpacing: "0.04em" }}>New expense</div>
+      <div style={{ background: "#fff", border: "1px solid #EBEBEB", borderRadius: "16px", padding: "1.25rem", marginBottom: "1rem" }}>
+        <div style={{ fontSize: "12px", color: "#999", marginBottom: "10px" }}>Add a new expense</div>
         <div style={{ display: "flex", gap: "8px" }}>
           <input
             type="text"
@@ -41,59 +54,57 @@ function App() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            style={{ flex: 1, height: "38px", padding: "0 12px", borderRadius: "10px", border: "1px solid #e8e8e8", fontSize: "14px", background: "#fafafa", outline: "none" }}
+            style={{ ...inputStyle, flex: 1 }}
           />
           <input
             type="number"
-            placeholder="₹"
+            placeholder="₹ Amount"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleAdd()}
-            style={{ width: "80px", height: "38px", padding: "0 12px", borderRadius: "10px", border: "1px solid #e8e8e8", fontSize: "14px", background: "#fafafa", outline: "none" }}
+            style={{ ...inputStyle, width: "100px" }}
           />
           <button
             onClick={handleAdd}
-            style={{ height: "38px", padding: "0 18px", borderRadius: "10px", border: "none", background: "#0f0f0f", color: "#fff", fontSize: "14px", cursor: "pointer", fontWeight: "500" }}
+            aria-label="Add expense"
+            style={{ height: "40px", width: "40px", borderRadius: "10px", border: "none", background: "#4F46E5", color: "#fff", fontSize: "22px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}
           >
-            Add
+            +
           </button>
         </div>
       </div>
 
       {/* List */}
-      <div style={{ background: "#fff", border: "1px solid #ebebeb", borderRadius: "16px", overflow: "hidden" }}>
+      <div style={{ background: "#fff", border: "1px solid #EBEBEB", borderRadius: "16px", overflow: "hidden" }}>
+        <div style={{ padding: "11px 1.25rem", borderBottom: "1px solid #F5F5F5", fontSize: "11px", color: "#bbb", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+          {expenses.length ? `Expenses · ${expenses.length}` : "Expenses"}
+        </div>
         {expenses.length === 0 ? (
-          <div style={{ padding: "2rem 1.5rem", color: "#ccc", fontSize: "14px", textAlign: "center" }}>
-            Your expenses will show up here
+          <div style={{ padding: "2.5rem 1.25rem", textAlign: "center" }}>
+            <div style={{ fontSize: "32px", marginBottom: "8px" }}>🧾</div>
+            <div style={{ fontSize: "14px", color: "#ccc" }}>Your expenses will appear here</div>
           </div>
         ) : (
-          <>
-            <div style={{ padding: "10px 1.5rem", fontSize: "11px", color: "#bbb", borderBottom: "1px solid #f5f5f5", letterSpacing: "0.06em", textTransform: "uppercase" }}>
-              {expenses.length} expense{expenses.length > 1 ? "s" : ""}
-            </div>
-            {expenses.map((expense) => (
-              <div
-                key={expense.id}
-                style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 1.5rem", borderBottom: "1px solid #f5f5f5" }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <div style={{ width: "7px", height: "7px", borderRadius: "50%", background: "#e0e0e0" }} />
-                  <span style={{ fontSize: "14px", color: "#1a1a1a" }}>{expense.name}</span>
+          expenses.map((e) => (
+            <div key={e.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "13px 1.25rem", borderBottom: "1px solid #F7F7F7" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div style={{ width: "34px", height: "34px", borderRadius: "10px", background: "#F3F2FF", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px" }}>
+                  {e.icon}
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <span style={{ fontSize: "14px", fontWeight: "500", color: "#1a1a1a" }}>
-                    ₹{expense.amount.toLocaleString("en-IN")}
-                  </span>
-                  <button
-                    onClick={() => handleDelete(expense.id)}
-                    style={{ background: "none", border: "none", cursor: "pointer", color: "#ccc", fontSize: "18px", lineHeight: 1, padding: "2px 4px" }}
-                  >
-                    ×
-                  </button>
-                </div>
+                <span style={{ fontSize: "14px", color: "#1a1a1a" }}>{e.name}</span>
               </div>
-            ))}
-          </>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                <span style={{ fontSize: "14px", fontWeight: "500", color: "#1a1a1a" }}>{fmt(e.amount)}</span>
+                <button
+                  onClick={() => handleDelete(e.id)}
+                  aria-label={`Delete ${e.name}`}
+                  style={{ width: "30px", height: "30px", borderRadius: "8px", border: "none", background: "#FEF2F2", color: "#F87171", cursor: "pointer", fontSize: "16px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                >
+                  🗑️
+                </button>
+              </div>
+            </div>
+          ))
         )}
       </div>
 
