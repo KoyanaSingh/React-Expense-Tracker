@@ -1,7 +1,20 @@
 import { useState } from "react";
 
-const ICONS = ["🛵", "🍽️", "🛍️", "📱", "☕", "🏠", "⚡", "🎵"];
-function pickIcon() { return ICONS[Math.floor(Math.random() * ICONS.length)]; }
+function pickIcon(name) {
+  const n = name.toLowerCase();
+  if (/food|lunch|dinner|breakfast|eat|meal|resto|restaurant|pizza|burger|biryani|dosa|chai|tea|coffee|snack|sweets|mithai/.test(n)) return "🍽️";
+  if (/auto|cab|uber|ola|bus|metro|train|travel|ride|petrol|fuel|parking|flight|ticket/.test(n)) return "🚗";
+  if (/grocery|groceries|vegetables|sabzi|milk|dairy|fruit|kirana/.test(n)) return "🛒";
+  if (/mobile|phone|recharge|internet|wifi|data|broadband/.test(n)) return "📱";
+  if (/shopping|clothes|shirt|jeans|shoes|amazon|flipkart|mall|dress/.test(n)) return "🛍️";
+  if (/rent|house|flat|pg|maintenance|electricity|bill|water|gas/.test(n)) return "🏠";
+  if (/medicine|medical|doctor|pharmacy|hospital|chemist|health/.test(n)) return "💊";
+  if (/movie|netflix|spotify|subscription|ott|show|game/.test(n)) return "🎬";
+  if (/salon|haircut|grooming|spa|parlour/.test(n)) return "✂️";
+  if (/gym|fitness|yoga|sport/.test(n)) return "💪";
+  if (/book|course|class|tuition|education|stationery/.test(n)) return "📚";
+  return "💸";
+}
 function fmt(n) { return "₹" + Math.round(n).toLocaleString("en-IN"); }
 
 function App() {
@@ -11,7 +24,7 @@ function App() {
 
   const handleAdd = () => {
     if (!name || !amount || Number(amount) <= 0) return;
-    setExpenses([...expenses, { id: Date.now(), name, amount: Number(amount), icon: pickIcon() }]);
+    setExpenses([...expenses, { id: Date.now(), name, amount: Number(amount), icon: pickIcon(name) }]);
     setName("");
     setAmount("");
   };
